@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+<!-- 	配置数据源 -->
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="url"
+			value="jdbc:mysql://localhost:3306/xionger">
+		</property>
+		<property name="username" value="root"></property>
+		<property name="password" value="1234"></property>
+	</bean>
+	<!-- 创建session工厂，需要数据源和映射文件 -->
+	<bean id="sqlSessionfactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations" value="classpath:com/tbs/mapper/*.xml"></property>
+	</bean>
+	<!-- 创建数据访问对象，即DAO. 需要session工厂，和其对于的接口类，告知其有作用 -->
+	<bean  class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 找到工厂，为了知道需要创建哪些dao  。sqlSessionFactoryBeanName自动补全-->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionfactory"></property>
+		<!-- 找到接口，为了知道需要创建的dao里需要哪些功能 。 basePackage自动补全-->
+		<property name="basePackage" value="com.tbs.dao"></property>
+	</bean>
+	<!-- 设置扫描包 -->
+	<context:component-scan base-package="com.tbs"></context:component-scan>
+	<!-- 启动注解驱动 -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+		<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>
+	</beans>
